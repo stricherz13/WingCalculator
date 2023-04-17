@@ -2,7 +2,7 @@ from kivy.core.text import LabelBase
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
-from plyer import gps
+
 
 kv = '''
 MDFloatLayout:
@@ -12,12 +12,8 @@ MDFloatLayout:
 
 class WingCalculatorApp(MDApp):
     def on_start(self):
-        gps.configure(on_location=self.on_gps_location)
-        gps.start()
-
-    def on_gps_location(self, **kwargs):
-        kwargs['lat'] = 10.0
-        kwargs['lon'] = 10.0
-        print(kwargs)
+        self.theme_cls.primary_palette = 'BlueGray'
+        # Initialize GPS
+        GpsHelper().run()
 
     def calculateWingSize(self):
