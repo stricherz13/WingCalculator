@@ -7,8 +7,12 @@ def get_wind(lat, lon):
         response = requests.get(url)
         x = response.json()
         if x["cod"] != "404":
+            name = x["name"]
             wind = float(x["wind"]["speed"] * 0.869)
-            windgust = float(x["wind"]["gust"] * 0.869)
+            try:
+                windgust = float(x["wind"]["gust"] * 0.869)
+            except KeyError:
+                windgust = None
             winddirection = None
             degrees = float(x["wind"]["deg"])
             if degrees >= 348.75 or degrees <= 33.74:
@@ -27,7 +31,7 @@ def get_wind(lat, lon):
                 winddirection = "West"
             elif 303.75 <= degrees <= 348.74:
                 winddirection = "Northwest"
-            return wind, windgust, winddirection
+            return wind, windgust, winddirection, name
     except requests.ConnectionError:
         return "No Internet Connection"
 
@@ -66,7 +70,7 @@ def wingcalculator(wind, weight, skill, style):
             return "7 meter wing recommended"
         elif 14 <= wind <= 20 and 200 <= weight <= 250:
             return "8 meter wing recommended"
-    if wind <= 9.9:
+    if wind <= 9.99:
         return "Wind speed is below recommend levels"
     if wind >= 33.1:
         return "Wind speed is above recommend levels"
@@ -212,12 +216,18 @@ def wingcalculator(wind, weight, skill, style):
         return "4 meter wing recommended"
 
 
-wind = round(get_wind("38.721089", "-90.479698")[0], 2)
-windgust = round(get_wind("38.721089", "-90.479698")[1], 2)
-winddirection = get_wind("38.721089", "-90.479698")[2]
+wind = round(get_wind("38.719489", "-90.478666")[0], 2)
+if get_wind("38.719489", "-90.478666")[1] is not None:
+    windgust = round(get_wind("38.719489", "-90.478666")[1], 2)
+else:
+    windgust = None
+winddirection = get_wind("38.719489", "-90.478666")[2]
+name = get_wind("38.719489", "-90.478666")[3]
 
 # print(wingcalculator(wind, 170, False, False))
-print(wingcalculator(wind, 210, True, False))
+print(wingcalculator(wind, 170, False, False))
 
-print(
-    f"At your current location the wind speed is {wind} kts with gusts {windgust} kts with a direction of {winddirection}.")
+if windgust != None:
+    print(f"At {name} the wind speed is {wind} kts with gusts {windgust} kts with a direction of {winddirection}.")
+else:
+    print(f"At {name} the wind speed is {wind} kts with a direction of {winddirection}.")

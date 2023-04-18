@@ -72,8 +72,13 @@ class WingCalculatorApp(MDApp):
             response = requests.get(url)
             x = response.json()
             if x["cod"] != "404":
+                self.name = x["name"]
                 self.wind = float(x["wind"]["speed"] * 0.869)
-                self.windgust = float(x["wind"]["gust"] * 0.869)
+                try:
+                    self.windgust = float(x["wind"]["gust"] * 0.869)
+                except KeyError:
+                    self.windgust = None
+                self.winddirection = None
                 degrees = float(x["wind"]["deg"])
                 if degrees >= 348.75 or degrees <= 33.74:
                     winddirection = "North"
@@ -91,7 +96,7 @@ class WingCalculatorApp(MDApp):
                     winddirection = "West"
                 elif 303.75 <= degrees <= 348.74:
                     winddirection = "Northwest"
-                return self.wind, self.windgust, self.winddirection
+                return self.wind, self.windgust, self.winddirection, self.name
         except requests.ConnectionError:
             return "No Internet Connection"
 
@@ -129,7 +134,7 @@ class WingCalculatorApp(MDApp):
                 return "7 meter wing recommended"
             elif 14 <= self.wind <= 20 and 200 <= weight <= 250:
                 return "8 meter wing recommended"
-        if self.wind <= 9.9:
+        if self.wind <= 9.99:
             return "Wind speed is below recommend levels"
         if self.wind >= 33.1:
             return "Wind speed is above recommend levels"
@@ -152,11 +157,11 @@ class WingCalculatorApp(MDApp):
         elif 10 <= self.wind <= 14.9 and 175 <= weight <= 199 and style:
             return "5-6 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 175 <= weight <= 199:
-            return "7 meter wing recommended"
+            return "7-8 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 200 <= weight <= 224 and style:
             return "6 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 200 <= weight <= 224:
-            return "7 meter wing recommended"
+            return "7-8 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 225 <= weight <= 250 and style:
             return "7 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 225 <= weight <= 250:
