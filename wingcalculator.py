@@ -1,7 +1,7 @@
 import requests
 
 
-def get_wind(lat, lon, ):
+def get_wind(lat, lon):
     try:
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=6ece76affa411be60affa4ee66ee2d62&units=imperial"
         response = requests.get(url)
@@ -12,21 +12,21 @@ def get_wind(lat, lon, ):
             winddirection = None
             degrees = float(x["wind"]["deg"])
             if degrees >= 348.75 or degrees <= 33.74:
-                winddirection = "N"
+                winddirection = "North"
             elif 33.75 <= degrees <= 78.74:
-                winddirection = "NE"
+                winddirection = "Northeast"
             elif 75.75 <= degrees <= 123.74:
-                winddirection = "E"
+                winddirection = "East"
             elif 123.75 <= degrees <= 168.74:
-                winddirection = "SE"
+                winddirection = "Southeast"
             elif 168.75 <= degrees <= 213.74:
-                winddirection = "S"
+                winddirection = "South"
             elif 213.75 <= degrees <= 258.74:
-                winddirection = "SW"
+                winddirection = "Southwest"
             elif 258.75 <= degrees <= 303.74:
-                winddirection = "W"
+                winddirection = "West"
             elif 303.75 <= degrees <= 348.74:
-                winddirection = "NW"
+                winddirection = "Northwest"
             return wind, windgust, winddirection
     except requests.ConnectionError:
         return "No Internet Connection"
