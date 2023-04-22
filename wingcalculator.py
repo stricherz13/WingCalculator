@@ -227,7 +227,10 @@ name = get_wind("38.719489", "-90.478666")[3]
 # print(wingcalculator(wind, 170, False, False))
 print(wingcalculator(wind, 170, False, False))
 
-if windgust != None:
-    print(f"At {name} the wind speed is {wind} kts with gusts {windgust} kts with a direction of {winddirection}.")
+if windgust is not None and windgust > (wind * 1.75):
+    print(f"At {name} the wind speed is {wind} kts with gusts of {windgust} kts at a direction of {winddirection}."
+          f"\n*Wind gust warning. Recommend using less power setting")
+elif windgust is not None:
+    print(f"At {name} the wind speed is {wind} kts with gusts of {windgust} kts at a direction of {winddirection}.")
 else:
     print(f"At {name} the wind speed is {wind} kts with a direction of {winddirection}.")
