@@ -3,30 +3,28 @@ import requests
 
 class WindCalculatorApp:
 
-    def __init__(self, weight, winddirection, windgust, wind, lon, lat):
-        self.weight = weight
-        self.winddirection = winddirection
-        self.windgust = windgust
-        self.wind = wind
+    def __init__(self, lon, lat):
+        self.winddirection = None
+        self.windgust = None
+        self.wind = None
+        self.name = None
         self.lon = lon
         self.lat = lat
 
     def gps_location(self):
-        lat = 38.719489
-        lon = -90.478666
         print(f"GPS position {self.lat}, {self.lon}")
-        return lat, lon
+        return self.lat, self.lon
 
-    def get_wind(self, lat, lon):
+    def get_wind(self):
         try:
-            url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=6ece76affa411be60affa4ee66ee2d62&units=imperial"
+            url = f"https://api.openweathermap.org/data/2.5/weather?lat={self.lat}&lon={self.lon}&appid=6ece76affa411be60affa4ee66ee2d62&units=imperial"
             response = requests.get(url)
             x = response.json()
             if x["cod"] != "404":
                 self.name = x["name"]
-                self.wind = float(x["wind"]["speed"] * 0.869)
+                self.wind = round(float(x["wind"]["speed"] * 0.869), 2)
                 try:
-                    self.windgust = float(x["wind"]["gust"] * 0.869)
+                    self.windgust = round(float(x["wind"]["gust"] * 0.869), 2)
                 except KeyError:
                     self.windgust = None
                 degrees = float(x["wind"]["deg"])
@@ -230,12 +228,29 @@ class WindCalculatorApp:
             return "4 meter wing recommended"
 
         if self.windgust is not None and self.windgust > (self.wind * 1.75):
-            print(f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction of {self.winddirection}."
-                  f"\n*Wind gust warning. Recommend using less power setting")
+            print(
+                f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction of {self.winddirection}."
+                f"\n*Wind gust warning. Recommend using less power setting")
         elif self.windgust is not None:
-            print(f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction of {self.winddirection}.")
+            print(
+                f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction of {self.winddirection}.")
+        else:
+            print(f"At {self.name} the wind speed is {self.wind} kts with a direction of {self.winddirection}.")
+
+    def get_recommendation(self):
+        if self.windgust is not None and self.windgust > (self.wind * 1.75):
+            print(
+                f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction of {self.winddirection}."
+                f"\n*Wind gust warning. Recommend using less power setting")
+        elif self.windgust is not None:
+            print(
+                f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction of {self.winddirection}.")
         else:
             print(f"At {self.name} the wind speed is {self.wind} kts with a direction of {self.winddirection}.")
 
 
-print(WindCalculatorApp.gps_location())
+if __name__ == '__main__':
+    app1 = WindCalculatorApp(-90.478666, 38.719489)
+    app1.get_wind()
+    print(app1.wingcalculator(210, False, False))
+    app1.get_recommendation()

@@ -22,11 +22,11 @@ MDScreen:
 class WingCalculatorApp(MDApp):
 
     def __init__(self, **kwargs):
-        super().__init__()
-        self.weight = None
+        super().__init__(**kwargs)
         self.winddirection = None
         self.windgust = None
         self.wind = None
+        # self.name = None
         self.lon = None
         self.lat = None
 
@@ -108,30 +108,29 @@ class WingCalculatorApp(MDApp):
             x = response.json()
             if x["cod"] != "404":
                 self.name = x["name"]
-                self.wind = float(x["wind"]["speed"] * 0.869)
+                self.wind = round(float(x["wind"]["speed"] * 0.869), 2)
                 try:
-                    self.windgust = float(x["wind"]["gust"] * 0.869)
+                    self.windgust = round(float(x["wind"]["gust"] * 0.869), 2)
                 except KeyError:
                     self.windgust = None
-                self.winddirection = None
                 degrees = float(x["wind"]["deg"])
                 if degrees >= 348.75 or degrees <= 33.74:
-                    winddirection = "North"
+                    self.winddirection = "North"
                 elif 33.75 <= degrees <= 78.74:
-                    winddirection = "Northeast"
+                    self.winddirection = "Northeast"
                 elif 75.75 <= degrees <= 123.74:
-                    winddirection = "East"
+                    self.winddirection = "East"
                 elif 123.75 <= degrees <= 168.74:
-                    winddirection = "Southeast"
+                    self.winddirection = "Southeast"
                 elif 168.75 <= degrees <= 213.74:
-                    winddirection = "South"
+                    self.winddirection = "South"
                 elif 213.75 <= degrees <= 258.74:
-                    winddirection = "Southwest"
+                    self.winddirection = "Southwest"
                 elif 258.75 <= degrees <= 303.74:
-                    winddirection = "West"
+                    self.winddirection = "West"
                 elif 303.75 <= degrees <= 348.74:
-                    winddirection = "Northwest"
-                return self.wind, self.windgust, self.winddirection, self.name
+                    self.winddirection = "Northwest"
+                return self.wind, self.winddirection, self.windgust
         except requests.ConnectionError:
             return "No Internet Connection"
 
@@ -141,7 +140,7 @@ class WingCalculatorApp(MDApp):
         if weight >= 251:
             return "Rider's Weight is above maximum value"
         if skill:
-            if self.wind <= 13.99:
+            if self.wind <= 13.9:
                 return "Wind speed is below recommend level for beginners"
             if self.wind >= 21:
                 return "Wind speed is above recommend level for beginners"
@@ -192,7 +191,7 @@ class WingCalculatorApp(MDApp):
         elif 10 <= self.wind <= 14.9 and 175 <= weight <= 199 and style:
             return "5-6 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 175 <= weight <= 199:
-            return "7-8 meter wing recommended"
+            return "7 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 200 <= weight <= 224 and style:
             return "6 meter wing recommended"
         elif 10 <= self.wind <= 14.9 and 200 <= weight <= 224:
@@ -314,25 +313,16 @@ class WingCalculatorApp(MDApp):
         elif 28 <= self.wind <= 33 and 225 <= weight <= 250:
             return "4 meter wing recommended"
 
-
-#     wind = round(self.wind, 2)
-#     if self.windgust is not None:
-#         windgust = round(self.windgust, 2)
-#     else:
-#         windgust = None
-#     winddirection = self.winddirection
-#     name = self.name
-#
-#     # print(wingcalculator(wind, 170, False, False))
-#     print(wingcalculator(wind, 170, False, False))
-#
-# if windgust is not None and windgust > (wind * 1.75):
-#     print(f"At {name} the wind speed is {wind} kts with gusts of {windgust} kts at a direction of {winddirection}."
-#           f"\n*Wind gust warning. Recommend using less power setting")
-# elif windgust is not None:
-#     print(f"At {name} the wind speed is {wind} kts with gusts of {windgust} kts at a direction of {winddirection}.")
-# else:
-#     print(f"At {name} the wind speed is {wind} kts with a direction of {winddirection}.")
+    def get_recommendation(self):
+        if self.windgust is not None and self.windgust > (self.wind * 1.75):
+            print(f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction "
+                  f"of {self.winddirection}."
+                  f"\n*Wind gust warning. Recommend using less power setting")
+        elif self.windgust is not None:
+            print(f"At {self.name} the wind speed is {self.wind} kts with gusts of {self.windgust} kts at a direction "
+                  f"of {self.winddirection}.")
+        else:
+            print(f"At {self.name} the wind speed is {self.wind} kts with a direction of {self.winddirection}.")
 
 
 if __name__ == '__main__':

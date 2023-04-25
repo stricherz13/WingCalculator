@@ -7,6 +7,7 @@ def get_wind(lat, lon):
         response = requests.get(url)
         x = response.json()
         if x["cod"] != "404":
+            print(x)
             name = x["name"]
             wind = float(x["wind"]["speed"] * 0.869)
             try:
